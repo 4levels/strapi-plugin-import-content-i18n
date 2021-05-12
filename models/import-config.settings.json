@@ -1,0 +1,33 @@
+{
+  "kind": "collectionType",
+  "collectionName": "",
+  "info": {
+    "name": "Import Configurations"
+  },
+  "options": {
+    "draftAndPublish": false,
+    "timestamps": true,
+    "increments": true,
+    "comment": ""
+  },
+  "attributes": {
+    "date": { "type": "date" },
+    "source": {
+      "type": "string"
+    },
+    "options": { "type": "json" },
+    "contentType": {
+      "type": "string"
+    },
+    "locales": { "type": "json" },
+    "fieldMapping": { "type": "json" },
+    "ongoing": {
+      "type": "boolean"
+    },
+    "importedItems": {
+      "collection": "imported-item",
+      "via": "importConfig",
+      "plugin": "import-content"
+    }
+  }
+}
