@@ -1,6 +1,10 @@
 # Strapi plugin import-content
 
-A quick description of import-content.
+Based off the now broken strapi-plugin-import-content, this plugin attempts to restore the original plugin's functionality, whilst adding support for the new Internationalization feature of Strapi.  Also handles relations, allows for repeated imports of the same records and handles media files from urls found in the import file.
+
+Work in progress, currently only tested with uploaded CSV files, and tailored to the specific needs for Kiddicolour.  Currently the media import also requires an override of the built-in strapi upload service, see below for specific instructions on how to extend the service.
+
+The goal is to remove all project specific customizations so this plugin can be used for any project.
 
 
 # HERE BE DRAGONS
@@ -65,12 +69,22 @@ For this to work, the Content Type needs to have an extra column to hold any ext
 ### Media import
 Is currently broken as there's no way to stream a file directly into Strapi.  See https://github.com/4levels/strapi/commit/4ed25fbdf1d1c2e26bc127c02dc95fd87488814c
 
+#### Extend strapi-plugin-upload
+To have the media import working seamlessly (without the need to store the files on the server first) we need a small change in the Strapi Upload service as shown in the related PR here: https://github.com/strapi/strapi/pull/10283
+In order to already use this, you can extend this service as follows:
+
+1. create the directory if not existing
+   `mkdir -p extensions/upload/services`
+2. copy the original service file from Strapi
+   `cp node_modules/strapi-plugin-upload/services/Upload.js extensions/upload/services/` 
+3. adjust the imports where needed, currently only at line 23
+   `const { bytesToKbytes } = require('strapi-plugin-upload/utils/file');`
+4. apply the fix from the PR - currently on line 93
+  `readBuffer = file && file.buffer || await util.promisify(fs.readFile)(file.path);`
 
 ## Caveats - dragons
 This code is only tested running locally using Strapi and online using Platform.sh in a 
 development environment.
-There's at least one glitch in the mappig table where blurring an input field forces a scroll up.
-There's definitely much bigger issues to be found as well, this is merely an attempt to make a
-usable import feature and move on afterwards as this is a one off operation.
-
-
+There's definitely issues to be found, this is merely an attempt to make a
+usable import feature and move on afterwards as this is a one-off operation.
+However since this plugin serves a much wanted feature - almost 700 votes on #23  https://portal.productboard.com/strapi/ - I think more people can benefit from this.
